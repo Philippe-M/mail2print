@@ -1,0 +1,13 @@
+version: '3'
+services:
+  mail2print:
+    build:
+      context: .
+    container_name: mail2print
+    restart: always
+    environment:
+      - TIMECRON=300
+      - PRINTER=print@192.168.0.1
+      - PURGE=2
+    volumes:
+      - /etc/mail2print/:/etc/mail2print
