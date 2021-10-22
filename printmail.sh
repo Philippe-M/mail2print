@@ -17,42 +17,30 @@ then
 			#echo "[printmail] Processing : $i" | tee -a ${LOGFILE}
 			uudeview $i -iqn -p ${ATTACH_DIR}/
 
-			# process file attachments with space
 			cd ${ATTACH_DIR}
-			NBATTACH=`ls ${ATTACH_DIR} | wc -l`
-			if [ ${NBATTACH} -ne 0 ]
-			then
-				for e in ./*
-				do
-					a=`echo $e | tr "[:blank:]" "_"`
-					if [ $? -eq 0 ]
-					then
-						mv "$e" "$a"
-					fi
-				done
-				for f in *.PDF
-				do
-					mv $f ${f%.*}.pdf
-				done
+                        # process file attachments (Thank's NeoX)
+                        for e in ./*
+                        do
+				# calcul le nouveau nom en replaçant les espaces par _ et PDF par pdf
+				nouveau_nom=`echo $(basename "$e") | tr "[:blank:]" "_" | tr "PDF" "pdf"`
 
-				# end of patch
-				#echo "[printmail] Printing PDFs" | tee -a ${LOGFILE}
-				for x in ${ATTACH_DIR}/*.pdf
-				do
-					#echo "[printmail] Printing : $x" | tee -a ${LOGFILE}
-					rlpr --printer=${PRINTER} $x
-					#echo "[printmail] Deleting file : $x" | tee -a ${LOGFILE}
-					rm -f $x | tee -a ${LOGFILE}
-				done
+				# extrait l'extension
+				extension=${nouveau_nom##*.}
 
-				#echo "[printmail] Clean up and remove any other attachments" | tee -a ${LOGFILE}
-				for y in ${ATTACH_DIR}/*
-				do
-					rm -f $y
-				done
-			fi
-			
-#			# delete mail
+				# renomme sous la nouvelle nomenclature
+				mv "$(basename "$e")" $nouveau_nom
+
+				# regarde si c'est un PDF et l'imprime
+				if [ ${extension} = "pdf" ]
+				then
+					rlpr --printer=${PRINTER} $nouveau_nom
+				fi
+
+				# efface la piece jointe
+				rm -f $nouveau_nom
+                        done
+		
+			# delete mail
 			#echo "[printmail] Deleting mail : $i" | tee -a ${LOGFILE}
 			rm $i | tee -a ${LOGFILE}
 		done
