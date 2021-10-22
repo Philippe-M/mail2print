@@ -1,4 +1,4 @@
-#mail2print
+# mail2print
 
 Mail2print est un container docker qui permet de relever automatiquement une boite mail et d'imprimer les pièces jointes aux formats pdf, ensuite déplacer les mails dans un dossier IMAP "archives".
 
